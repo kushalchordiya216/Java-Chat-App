@@ -6,12 +6,9 @@ package Sockets;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * This is the chat server program.
- * Press Ctrl + C to terminate the program.
+ * This is the chat server program. Press Ctrl + C to terminate the program.
  *
  * @author www.codejava.net
  */
@@ -36,17 +33,20 @@ public class Server {
     }
 
     /**
-     * Returns true if there are other users connected (not count the currently connected user)
+     * Returns true if there are other users connected (not count the currently
+     * connected user)
      */
     boolean hasUsers() {
         return !this.userNames.isEmpty();
     }
 
     /**
-     * Delivers a message from one user to others (broadcasting)
-     * Asynchronous execution
+     * Delivers a message from one user to others (broadcasting) Asynchronous
+     * execution
      */
     void broadcast(String message, UserThread excludeUser) {
+        System.out.println("Now broadcasting");
+        // TODO: Modify function to broadcast to only predetermined list of sockets
         new Thread(() -> {
             for (UserThread aUser : userThreads) {
                 if (aUser != excludeUser) {
@@ -77,9 +77,9 @@ public class Server {
                 System.out.println("New user connected");
 
                 UserThread newUser = new UserThread(socket, this);
+                Thread newThread = new Thread(newUser);
                 userThreads.add(newUser);
-                ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newWorkStealingPool(10);
-                executor.execute(newUser);
+                newThread.start();
             }
 
         } catch (IOException ex) {

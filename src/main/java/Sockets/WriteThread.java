@@ -31,21 +31,28 @@ public class WriteThread extends Thread {
 
         Console console = System.console();
 
-        String userName = console.readLine("\nEnter your name: ");
-        client.setUserName(userName);
-        writer.println(userName);
-
-        String text;
+        String text = null;
 
         do {
-            text = console.readLine();
-            writer.println(text);
-        } while (!text.equals("bye"));
+            // TODO: Input should come from SendMessage method of user class
+            try {
+                text = console.readLine();
+                writer.println(text);
+            } catch (NullPointerException ne) {
+                ne.printStackTrace();
+            }
+        } while (!text.equals("Bye"));
+        this.client.user.Logout();
 
         try {
-            socket.close();
-        } catch (IOException ex) {
-            System.out.println("Error writing to server: " + ex.getMessage());
+            this.socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        // try {
+        // socket.close();
+        // } catch (IOException ex) {
+        // System.out.println("Error writing to server: " + ex.getMessage());
+        // }
     }
 }

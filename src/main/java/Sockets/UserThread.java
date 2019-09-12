@@ -2,6 +2,7 @@ package Sockets;
 
 import java.io.*;
 import java.net.*;
+import Profile.User;
 
 public class UserThread implements Runnable {
     private Socket socket;
@@ -21,32 +22,25 @@ public class UserThread implements Runnable {
             OutputStream output = socket.getOutputStream();
             writer = new PrintWriter(output, true);
 
-            printUsers();
-
-            String userName = reader.readLine();
-            server.addUserName(userName);
-
-            String serverMessage = "New user connected: " + userName;
+            String serverMessage = "New user connected";
             server.broadcast(serverMessage, this);
 
             String clientMessage;
 
             do {
                 clientMessage = reader.readLine();
-                serverMessage = "[" + userName + "]: " + clientMessage;
+                serverMessage = clientMessage;
                 server.broadcast(serverMessage, this);
             } while (!clientMessage.equals("bye"));
 
-            server.removeUser(userName, this);
+            // server.removeUser(username, this);
             socket.close();
-
-            serverMessage = userName + " has quitted.";
-            server.broadcast(serverMessage, this);
-
         } catch (IOException ex) {
             System.out.println("Error in UserThread: " + ex.getMessage());
             ex.printStackTrace();
-        }
+        } // catch (ClassNotFoundException e) {
+          // e.printStackTrace();
+          // }
     }
 
     /**
@@ -64,6 +58,6 @@ public class UserThread implements Runnable {
      * Sends a message to the client.
      */
     void sendMessage(String message) {
-       writer.println(message);
+        writer.println(message);
     }
 }
