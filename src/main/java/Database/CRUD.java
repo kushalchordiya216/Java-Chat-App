@@ -10,7 +10,7 @@ public interface CRUD {
 
     public ResultSet Retrieve(String[] Params);
 
-    public Boolean Create(String[] Params);
+    public Integer Create(String[] Params);
 
     public void Update(String[] Params);
 

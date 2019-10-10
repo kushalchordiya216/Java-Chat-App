@@ -24,7 +24,7 @@ public class UserTable implements CRUD {
     public ResultSet Retrieve(String[] Parameters) {
         try {
             PreparedStatement stmt = this.connection
-                    .prepareStatement("SELECT * FROM Users WHERE password=? AND name=?");
+                    .prepareStatement("SELECT * FROM Users WHERE name=? AND password=?");
             stmt.setString(1, Parameters[0]);
             stmt.setString(2, Parameters[1]);
             ResultSet rs = stmt.executeQuery();
@@ -38,7 +38,7 @@ public class UserTable implements CRUD {
     }
 
     @Override
-    public Boolean Create(String[] Parameters) {
+    public Integer Create(String[] Parameters) {
         try {
             PreparedStatement stmt = this.connection
                     .prepareStatement("INSERT INTO Users(name,password,loggedIn) VALUES(?,?,true)");
@@ -46,21 +46,23 @@ public class UserTable implements CRUD {
             stmt.setString(2, Parameters[1]);
             stmt.executeUpdate();
             stmt.close();
-            return true;
+            ResultSet rs = Retrieve(Parameters);
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+            return -1;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 
     @Override
     public void Update(String[] Parameters) {
         try {
-            PreparedStatement stmt = this.connection
-                    .prepareStatement("UPDATE Users set password = ?, loggedIn = ? WHERE name = ?");
-            stmt.setString(1, Parameters[0]);
-            stmt.setBoolean(2, Boolean.parseBoolean(Parameters[1]));
-            stmt.setString(3, Parameters[2]);
+            PreparedStatement stmt = this.connection.prepareStatement("UPDATE Users set loggedIn = ? WHERE name = ?");
+            stmt.setBoolean(1, Boolean.parseBoolean(Parameters[0]));
+            stmt.setString(2, Parameters[1]);
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {

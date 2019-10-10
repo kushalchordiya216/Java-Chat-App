@@ -1,90 +1,63 @@
 package Profile;
 
-import Profile.Group;
+import Profile.Channels;
+import Profile.Message;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
-import Database.UserTable;
+
 import java.util.ArrayList;
 
 public class User {
     private String username, password;
     private Boolean isLoggedIn;
-    private ArrayList<Long> groups;
-    private Group activeGroup;
-    private UserTable userTable = new UserTable();
+    private ArrayList<Integer> channels;
+    private int activeChannel;
+    private int id;
 
-    public Boolean Register() throws SQLException {
+    public void setter(ResultSet rs) throws SQLException {
+        this.username = rs.getString("name");
+        this.password = rs.getString("password");
+        this.id = (int) rs.getInt("id");
+    }
+
+    public String[] Register() throws SQLException {
         System.out.println("Enter a Username");
         Scanner sc = new Scanner(System.in);
         String username = sc.nextLine();
         System.out.println("Enter a password");
         String password = sc.nextLine();
-        String[] Query = { username, password };
-        if (this.userTable.Create(Query)) {
-            System.out.println("User account created!");
-            this.setPassword(password);
-            this.setUsername(username);
-            return true;
-        } else {
-            System.out.println("Username already exists!\nTry logging in directly or use different username");
-            return false;
-        }
-        // TODO: Make a render chat function
+        System.out.println("Creating new Account....");
+        String[] Queries = { username, password, "0" };
+        return Queries;
     }
 
-    public Boolean Login() {
+    public String[] Login() {
         System.out.println("Enter a Username");
         Scanner sc = new Scanner(System.in);
         String username = sc.nextLine();
         System.out.println("Enter a password");
         String pass = sc.nextLine();
-        String[] Queries = { pass, username };
-        ResultSet rs = this.userTable.Retrieve(Queries);
-        try {
-            if (rs.next()) {
-                if (rs.getBoolean(4)) {
-                    System.out.println("User is already logged in from another device");
-                    return false;
-                }
-                this.setUsername(username);
-                this.setPassword(pass);
-                String[] UpdateQueries = { pass, "true", username };
-                userTable.Update(UpdateQueries);
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return false;
+        System.out.println("Logging in ....");
+        String[] Queries = { pass, username, "1" };
+        return Queries;
     }
 
-    public void Logout() {
+    public String[] Logout() {
         String[] Queries = { this.getPassword(), "false", this.getUsername() };
-        this.userTable.Update(Queries);
+        return Queries;
     }
 
-    public String SendMessage(String message) {
-        // TODO: Take input written in GUI and pass to writethread
-        return null;
-    }
-
-    public String ReceiveMessage(String message) {
-        // TODO: Take message received by read thread and pass it to GUI
-        return null;
-    }
-
-    public void CreateGroup() {
+    public void CreateChannel() {
         // TODO: Take list of users as input and create new group object
     }
 
-    public void SelectGroup() {
+    public void SelectChannel() {
         // TODO: Allow user to select one group as the current active group
     }
 
-    public void UpdateGroupList() {
+    public void UpdateChannelList() {
         // TODO: When a user is added to a group update groups ArrayList
     }
 
@@ -114,19 +87,23 @@ public class User {
         this.isLoggedIn = isLoggedIn;
     }
 
-    public ArrayList<Long> getGroups() {
-        return groups;
+    public int getId() {
+        return id;
     }
 
-    public void setGroups(ArrayList<Long> groups) {
-        this.groups = groups;
+    public void setGroups(ArrayList<Integer> channels) {
+        this.channels = channels;
     }
 
-    public Group getActiveGroup() {
-        return activeGroup;
+    public void setActiveChannel(int activeChannel) {
+        this.activeChannel = activeChannel;
     }
 
-    public void setActiveGroup(Group activeGroup) {
-        this.activeGroup = activeGroup;
+    public int getActiveChannel() {
+        return this.activeChannel;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
